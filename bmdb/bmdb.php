@@ -8,8 +8,7 @@ Author: Bearye
 Author URI: https://noooooe.cn
 */
 
-register_activation_hook( __FILE__, 'bmdb');
-
+//register css and js
 function my_bmdb_css_js(){
     wp_enqueue_script("jquery");
     wp_enqueue_style( 'bbmdbb', plugins_url( 'includes/Bmdb.min.css',__FILE__));
@@ -23,43 +22,13 @@ function bmdb_head(){
 }
 add_action('wp_head','bmdb_head');
 
-function add_bmdb($atts, $content=null, $code=""){
-
-    echo '<div class="BMDB"></div>';
-    if ($content == 'movies'){
-        ?>
-
-        <script>
-            jQuery(document).ready(function ($) {
-                new Bmdb({
-                    type: 'movies',
-                    selector: '.BMDB',
-                    secret: '<?php get_option('bmdb_secret') ?>',
-                    noMoreText: '没有更多数据了',
-                    limit: 30
-                })
-            })
-        </script>
-
-        <?php
-    }elseif ($content == 'books'){
-        ?>
-        <script>
-            jQuery(document).ready(function ($) {
-                new Bmdb({
-                    type: 'books',
-                    selector: '.BMDB',
-                    secret: '<?php get_option('bmdb_secret') ?>',
-                    noMoreText: '没有更多数据了',
-                    limit: 30
-                })
-            })
-        </script>
-        <?php
-    }
+//add shortcode
+function add_bmdb($atts=null, $content=null, $code=""){
+    return "<div class='BMDB'></div>'.<script>jQuery(document).ready(function ($) {new Bmdb({type: '".$content."', selector: '.BMDB', secret: '".get_option('bmdb_secret')."', noMoreText: '没有更多数据了', limit: 30})})</script>";
 }
 add_shortcode('bmdb', 'add_bmdb');
 
+//add bmdb settings page
 function bmdb_admin(){
     if( !empty($_POST) && check_admin_referer('bmdb_update') ) {
         update_option('bmdb_secret', $_POST['bmdb_secret']);
@@ -91,11 +60,10 @@ function bmdb_admin(){
             <?php wp_nonce_field('bmdb_update'); ?>
         </form>
     </div>
-<?php
+    <?php
 }
 
-
-
+//add bmdb settings menu
 function bmdb_menu() {
     add_options_page('豆瓣读书观影', '豆瓣读书观影', 'manage_options', 'bmdb','bmdb_admin' );
 }
