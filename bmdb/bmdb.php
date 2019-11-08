@@ -17,6 +17,12 @@ function my_bmdb_css_js(){
 }
 add_action('wp_enqueue_scripts', 'my_bmdb_css_js');
 
+//add head meta
+function bmdb_head(){
+    echo '<meta name="referrer" content="never">';
+}
+add_action('wp_head','bmdb_head');
+
 function add_bmdb($atts, $content=null, $code=""){
 
     echo '<div class="BMDB"></div>';
