@@ -3,7 +3,7 @@
 Plugin Name: 豆瓣读书观影记录
 Plugin URI: https://noooooe.cn
 Description: 用的是牧风的SDK，原项目地址https://mufeng.me/post/have-seen-the-film。我拿来适配了wordpress，三无产品，不接受技术支持。
-Version: 1.0
+Version: 2.0
 Author: Bearye
 Author URI: https://noooooe.cn
 */
@@ -11,8 +11,8 @@ Author URI: https://noooooe.cn
 //register css and js
 function my_bmdb_css_js(){
     wp_enqueue_script("jquery");
-    wp_enqueue_style( 'bbmdbb', plugins_url( 'includes/Bmdb.min.css',__FILE__));
-    wp_enqueue_script( 'bbmdbb', plugins_url( 'includes/Bmdb.min.js',__FILE__));
+    wp_enqueue_style( 'bbmdbb', plugins_url( 'includes/Bmdb.min.css',__FILE__),null,'1.6.0');
+    wp_enqueue_script( 'bbmdbb', plugins_url( 'includes/Bmdb.min.js',__FILE__),null,'1.6.0');
 }
 add_action('wp_enqueue_scripts', 'my_bmdb_css_js');
 
@@ -24,7 +24,7 @@ add_action('wp_head','bmdb_head');
 
 //add shortcode
 function add_bmdb($atts=null, $content=null, $code=""){
-    return "<div class='BMDB'></div>'.<script>jQuery(document).ready(function ($) {new Bmdb({type: '".$content."', selector: '.BMDB', secret: '".get_option('bmdb_secret')."', noMoreText: '没有更多数据了', limit: 30})})</script>";
+    return "<div class='BMDB'></div><script>jQuery(document).ready(function ($) {new Bmdb({type: '".$content."', selector: '.BMDB', secret: '".get_option('bmdb_secret')."', noMoreText: '".(get_option('bmdb_endtext')?get_option('bmdb_endtext'):"加载完毕")."', limit: ".(get_option('bmdb_limit')?get_option('bmdb_limit'):30)."})})</script>";
 }
 add_shortcode('bmdb', 'add_bmdb');
 
@@ -32,6 +32,9 @@ add_shortcode('bmdb', 'add_bmdb');
 function bmdb_admin(){
     if( !empty($_POST) && check_admin_referer('bmdb_update') ) {
         update_option('bmdb_secret', $_POST['bmdb_secret']);
+        update_option('bmdb_limit', $_POST['bmdb_limit']);
+
+        update_option('bmdb_endtext', $_POST['bmdb_endtext']);
         ?>
         <div id="message" class="updated">
             <p><strong>更改成功</strong></p>
@@ -53,6 +56,18 @@ function bmdb_admin(){
                         <p class="description" id="new-admin-email-description">secret请到https://bm.weajs.com/申请</p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row"><label for="bmdb_secret">每页显示的数量</label></th>
+                    <td>
+                        <input name="bmdb_limit" type="text" id="bmdb_limit" value="<?php echo esc_attr(get_option('bmdb_limit')) ?>" class="regular-text">
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="bmdb_secret">加载完成显示文字</label></th>
+                    <td>
+                        <input name="bmdb_endtext" type="text" id="bmdb_endtext" value="<?php echo esc_attr(get_option('bmdb_endtext')) ?>" class="regular-text">
+                    </td>
+                </tr>
                 </tbody></table>
 
 
@@ -60,7 +75,7 @@ function bmdb_admin(){
             <?php wp_nonce_field('bmdb_update'); ?>
         </form>
     </div>
-    <?php
+<?php
 }
 
 //add bmdb settings menu
