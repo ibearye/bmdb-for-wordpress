@@ -2,7 +2,7 @@
 
 ## 关于插件
 
-插件介绍 [https://nooooe.cn/archives/147](https://nooooe.cn/archives/147)
+插件介绍 [https://bearye.cn/archives/147](https://bearye.cn/archives/147)
 
 ## 感谢
 
